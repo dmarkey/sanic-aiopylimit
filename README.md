@@ -2,4 +2,4 @@
 # sanic-aiopylimit
 A rate limiting library for Sanic based on aiopylimit
 
-for example use See the [sample app](sample_app/simple.py)
+For example use see the [sample app](sample_app/simple.py).
