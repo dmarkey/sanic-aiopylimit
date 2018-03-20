@@ -1,6 +1,7 @@
 from sanic import Sanic
 from sanic import response
 from sanic.response import json
+from sanic.views import HTTPMethodView
 
 from sanic_aiopylimit.decorators import aiopylimit
 from sanic_aiopylimit.limit import SanicAIOPyLimit
@@ -19,6 +20,16 @@ def custom_key(request):
 
 def custom_view(request):
     return json("bad", status=400)
+
+
+class SimpleSyncView(HTTPMethodView):
+
+    @aiopylimit("class_based_get", (60, 1))  # 1 per 60 seconds
+    def get(self, request):
+        return json('OK')
+
+
+app.add_route(SimpleSyncView.as_view(), '/simpleview')
 
 
 @app.route("/write")

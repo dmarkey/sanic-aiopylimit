@@ -1,11 +1,25 @@
+import asyncio
 from aiopylimit import AIOPyRateLimit
+import inspect
+
+
+def _is_method(func):
+    spec = inspect.signature(func)
+    if len(spec.parameters) > 0:
+        if list(spec.parameters.keys())[0] == 'self':
+            return True
+    return False
 
 
 def aiopylimit(namespace, limit_args, limit_reached_view=None, key_func=None):
     def real_decorator(func):
         async def wrapper(*args, **kwargs):
             limiter = AIOPyRateLimit(*limit_args)
-            request = args[0]
+            if _is_method(func):
+                request = args[1]
+            else:
+                request = args[0]
+
             limit_reached_view_local = limit_reached_view
             if limit_reached_view_local is None:
                 limit_reached_view_local = request.app.limit_reached_view
@@ -20,7 +34,11 @@ def aiopylimit(namespace, limit_args, limit_reached_view=None, key_func=None):
                     or not await limiter.attempt(full_key):
                 return limit_reached_view_local(request)
 
-            return await func(*args, **kwargs)
+            response = func(*args, **kwargs)
+
+            if asyncio.iscoroutine(response):
+                return await response
+            return response
 
         return wrapper
 
