@@ -13,13 +13,13 @@ async def test(request):
 
 
 @app.route("/write")
-@aiopylimit("write_api", (60, 1))  # 1 per minute
+@aiopylimit("write_api", (60, 1))  # 1 per 60 seconds
 async def test(request):
     return response.json({"test": True})
 
 app.config['SANIC_AIOPYRATELIMIT_REDIS_HOST'] = "localhost"
 
-SanicAIOPyLimit.init_app(app, global_limit=(60, 60))  # 1 per second
+SanicAIOPyLimit.init_app(app, global_limit=(1, 1))  # 1 per second
 
 
 if __name__ == '__main__':

@@ -9,7 +9,7 @@ setup(
   setup_requires=['setuptools_scm'],
   url='https://github.com/dmarkey/sanic-aiopylimit',
   install_requires=[
-      'aiopylimit<=0.2.1',
+      'aiopylimit<=0.2.2',
   ],
   keywords=['rate limiting', 'throttle', 'redis', 'asyncio', 'sanic'],
   classifiers=[],
