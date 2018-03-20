@@ -7,13 +7,18 @@ def test_throttling_simple_app():
     request, response = app.test_client.get('/write')
     assert response.status == 200
     request, response = app.test_client.get('/write')
+    assert response.status == 400
+    request, response = app.test_client.get('/write2')
+    assert response.status == 200
+    request, response = app.test_client.get('/write2')
     assert response.status == 429
-    sleep(1)
+    for x in range(0, 6):
+        request, response = app.test_client.get('/')
+        assert response.status == 200
+    request, response = app.test_client.get('/')
+    assert response.status == 429
+    sleep(10)
     request, response = app.test_client.get('/')
     assert response.status == 200
-    request, response = app.test_client.get('/')
-    assert response.status == 429
-    sleep(2)
-    request, response = app.test_client.get('/')
-    assert response.status == 200
+
 

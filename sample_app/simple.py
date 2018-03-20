@@ -1,5 +1,6 @@
 from sanic import Sanic
 from sanic import response
+from sanic.response import json
 
 from sanic_aiopylimit.decorators import aiopylimit
 from sanic_aiopylimit.limit import SanicAIOPyLimit
@@ -12,14 +13,28 @@ async def test(request):
     return response.json({"test": True})
 
 
+def custom_key(request):
+    return "something"
+
+
+def custom_view(request):
+    return json("bad", status=400)
+
+
 @app.route("/write")
-@aiopylimit("write_api", (60, 1))  # 1 per 60 seconds
+@aiopylimit("write_api", (60, 1), key_func=custom_key,
+            limit_reached_view=custom_view)  # 1 per 60 seconds
 async def test(request):
     return response.json({"test": True})
 
+
+@app.route("/write2")
+@aiopylimit("write_api2", (60, 1))  # 1 per 60 seconds
+async def test(request):
+    return response.json({"test": True})
 app.config['SANIC_AIOPYRATELIMIT_REDIS_HOST'] = "localhost"
 
-SanicAIOPyLimit.init_app(app, global_limit=(1, 1))  # 1 per second
+SanicAIOPyLimit.init_app(app, global_limit=(10, 10))  # 10 per 10 seconds
 
 
 if __name__ == '__main__':
