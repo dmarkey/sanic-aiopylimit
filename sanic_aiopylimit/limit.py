@@ -32,7 +32,7 @@ class SanicAIOPyLimit(object):
         if REDIS_HOST_KEY not in app.config:
             raise ValueError("Need a redis server host defined")
 
-        if limit_reached_view != 429 and limit_reached_view is not None:
+        if limit_reached_http_code != 429 and limit_reached_view is not None:
             raise ValueError("Please implement the "
                              "limit_reached_http_code in your custom view.")
 
@@ -40,8 +40,8 @@ class SanicAIOPyLimit(object):
             limit_reached_view = create_default_view(limit_reached_http_code)
 
         redis_host = app.config[REDIS_HOST_KEY]
-        redis_port = app.config.get(REDIS_PORT_KEY, 6379)
-        redis_db = app.config.get(REDIS_DB_KEY, 1)
+        redis_port = int(app.config.get(REDIS_PORT_KEY, 6379))
+        redis_db = int(app.config.get(REDIS_DB_KEY, 1))
         is_sentinal_redis = bool(app.config.get(REDIS_IS_SENTINAL_KEY, 0))
         redis_password = app.config.get(REDIS_PASSWORD_KEY, None)
 
@@ -54,7 +54,8 @@ class SanicAIOPyLimit(object):
             redis_port=redis_port,
             db=redis_db,
             is_sentinel_redis=is_sentinal_redis,
-            redis_password=redis_password)
+            redis_password=redis_password,
+            force_new_connection=True)
 
         if global_limit is not None:
             global_limiter = AIOPyRateLimit(*global_limit)
