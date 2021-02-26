@@ -1,6 +1,6 @@
 sanic==0.7.0
 aiopylimit<=0.2.3
 pytest==3.4.2
-aiohttp==3.0.9
+aiohttp==3.7.4
 asynctest==0.12.0
 
