@@ -1,4 +1,4 @@
-sanic==0.7.0
+sanic==20.12.6
 aiopylimit<=0.2.3
 pytest==3.4.2
 aiohttp==3.0.9
